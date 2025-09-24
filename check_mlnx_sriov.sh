@@ -1,6 +1,18 @@
 #!/bin/bash
 # Mellanox + SR-IOV diagnostic script for OpenStack on Kubernetes
 # Run on baremetal compute nodes (e.g., baremetal1, baremetal2)
+# Copy the script to problematic node:
+#scp check_mlnx_sriov.sh baremetal1:/root/
+#scp check_mlnx_sriov.sh baremetal2:/root/
+#Run it:
+#chmod +x check_mlnx_sriov.sh
+#./check_mlnx_sriov.sh
+#It will print:
+#NIC hardware & driver
+#VF counts (SR-IOV)
+#Kernel/IOMMU logs
+#SR-IOV device plugin status
+#Neutron agent pod logs
 
 echo "=== Mellanox & SR-IOV Diagnostic Script ==="
 NODE=$(hostname)
