@@ -7,8 +7,8 @@ declare -A HOST_MAP=(
   ["k8s-master1"]="192.168.1.111/24"
   ["k8s-master2"]="192.168.1.112/24"
   ["k8s-master3"]="192.168.1.113/24"
-  ["k8s-worker1"]="192.168.1.121/24"
-  ["k8s-worker2"]="192.168.1.122/24"
+  ["k8s-worker"]="192.168.1.121/24"
+  ["k8s-worker1"]="192.168.1.122/24"
 )
 
 # Gateway
@@ -20,8 +20,8 @@ HOSTS_BLOCK=$(cat <<EOF
 192.168.1.111 k8s-master1
 192.168.1.112 k8s-master2
 192.168.1.113 k8s-master3
-192.168.1.121 k8s-worker1
-192.168.1.122 k8s-worker2
+192.168.1.121 k8s-worker
+192.168.1.122 k8s-worker1
 EOF
 )
 
@@ -32,28 +32,56 @@ echo "Detected hostname: $HOSTNAME_CURRENT"
 
 # Step 1: Ensure /etc/hosts has our block
 echo "Updating /etc/hosts..."
-# Backup first
 cp /etc/hosts /etc/hosts.bak.$(date +%F-%T)
-# Remove existing lines of these hosts
 sed -i '/tunnel-vm/d;/k8s-master1/d;/k8s-master2/d;/k8s-master3/d;/k8s-worker/d;/k8s-worker1/d' /etc/hosts
-# Append new block
 echo "$HOSTS_BLOCK" >> /etc/hosts
 
-# Step 2: Update IP if hostname matches
+# Step 2: Update IP + hostname if in map
 if [[ -v HOST_MAP[$HOSTNAME_CURRENT] ]]; then
   NEW_IP=${HOST_MAP[$HOSTNAME_CURRENT]}
-  echo "Setting IP for $HOSTNAME_CURRENT → $NEW_IP"
+  echo "Setting static IP for $HOSTNAME_CURRENT → $NEW_IP"
 
   # Find default interface
   IFACE=$(ip route | awk '/default/ {print $5; exit}')
   echo "Using interface: $IFACE"
 
-  # Apply new IP (clears old first to avoid duplicates)
-  ip addr flush dev "$IFACE"
-  ip addr add "$NEW_IP" dev "$IFACE"
-  ip route add default via "$GATEWAY" dev "$IFACE"
+  # --- Set hostname (system + file) ---
+  echo "Updating hostname..."
+  hostnamectl set-hostname "$HOSTNAME_CURRENT"
+  echo "$HOSTNAME_CURRENT" > /etc/hostname
 
-  echo "✅ IP updated successfully"
+  # --- Disable cloud-init network override ---
+  echo "Disabling cloud-init network config..."
+  mkdir -p /etc/cloud/cloud.cfg.d
+  cat > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg <<EOF
+network: {config: disabled}
+EOF
+
+  # --- Update netplan config ---
+  NETPLAN_FILE="/etc/netplan/50-cloud-init.yaml"
+  cp "$NETPLAN_FILE" "$NETPLAN_FILE.bak.$(date +%F-%T)"
+
+  cat > "$NETPLAN_FILE" <<EOF
+network:
+    version: 2
+    ethernets:
+        $IFACE:
+            dhcp4: no
+            addresses:
+              - $NEW_IP
+            gateway4: $GATEWAY
+            nameservers:
+                addresses: [8.8.8.8, 1.1.1.1]
+EOF
+
+  # Apply changes immediately
+  netplan apply
+
+  echo "✅ Hostname + Static IP applied successfully"
+  echo "   Hostname   : $HOSTNAME_CURRENT"
+  echo "   IP Address : $NEW_IP"
+  echo "   Gateway    : $GATEWAY"
+  echo "   Interface  : $IFACE"
 else
-  echo "⚠️ Hostname $HOSTNAME_CURRENT not in list. No IP changes made."
+  echo "⚠️ Hostname $HOSTNAME_CURRENT not in HOST_MAP. No IP changes made."
 fi
