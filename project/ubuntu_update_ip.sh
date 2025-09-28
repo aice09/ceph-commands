@@ -9,6 +9,7 @@ declare -A HOST_MAP=(
   ["k8s-master3"]="192.168.1.113/24"
   ["k8s-worker1"]="192.168.1.121/24"
   ["k8s-worker2"]="192.168.1.122/24"
+  ["k8s-worker3"]="192.168.1.123/24"
 )
 
 # Gateway
@@ -22,6 +23,7 @@ HOSTS_BLOCK=$(cat <<EOF
 192.168.1.113 k8s-master3
 192.168.1.121 k8s-worker1
 192.168.1.122 k8s-worker2
+192.168.1.123 k8s-worker3
 EOF
 )
 
