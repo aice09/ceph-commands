@@ -38,7 +38,6 @@ URIs: http://download.proxmox.com/debian/pve
 Suites: trixie
 Components: pve-no-subscription
 Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-Save and exit (Ctrl + O, Enter, Ctrl + X).
 ```
 
 ### 🧩 Step 2: Replace ceph.sources
