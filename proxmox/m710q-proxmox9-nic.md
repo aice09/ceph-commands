@@ -1,9 +1,9 @@
-# Troubleshooting Intel I219-V Ethernet Controller on Linux
+# Troubleshooting Intel I219-V Ethernet Controller on Linux/Proxmox 9
 
 
 ### Problem
 
-On a Lenovo M710Q running a custom kernel (`6.14.8-2-pve`), the Intel I219-V Ethernet controller is detected in `lspci`:
+On a Lenovo M710Q running a custom kernel (`6.14.8-2-pve`) [Proxmox VE 9.0](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso/proxmox-ve-9-0-iso-installer), the Intel I219-V Ethernet controller is detected in `lspci`:
 ```
 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection (2) I219-V [8086:15b8]
 ```
