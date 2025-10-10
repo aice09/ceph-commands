@@ -2,7 +2,7 @@
 
 
 ### Problem
-
+![Proxmox 9 with Lenovo M710q ethernet not detected](https://raw.githubusercontent.com/aice09/the-sre-notes/refs/heads/main/proxmox/Screenshot%202025-10-10%20145239.jpg)
 On a Lenovo M710Q running a custom kernel (`6.14.8-2-pve`) [Proxmox VE 9.0](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso/proxmox-ve-9-0-iso-installer), the Intel I219-V Ethernet controller is detected in `lspci`:
 ```
 00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection (2) I219-V [8086:15b8]
