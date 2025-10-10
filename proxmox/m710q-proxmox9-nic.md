@@ -58,7 +58,7 @@ systemctl restart networking
 ```
 
 ## Resolution
-- Reset NIC NVM
+Reset NIC NVM
 
 1. Download Intel BootUtil in InteL website [Intel® Ethernet Connections Boot Utility, Preboot Images, and EFI Drivers](https://www.intel.com/content/www/us/en/download/15755/intel-ethernet-connections-boot-utility-preboot-images-and-efi-drivers.html)
 ```bash
